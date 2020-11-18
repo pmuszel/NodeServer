@@ -1,0 +1,16 @@
+{
+  "name": "demo-server",
+  "version": "0.0.0",
+  "description": "DemoServer",
+  "main": "app.js",
+  "author": "Piotr Muszel",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
