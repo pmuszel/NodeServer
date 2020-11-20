@@ -2,7 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const expressHbs = require('express-handlebars');
+//const expressHbs = require('express-handlebars');
 
 const app = express();
 
@@ -10,14 +10,15 @@ const app = express();
 //app.set('view engine', 'pug');
 
 //Express-handlebars View Engine
-app.engine('.hbs', expressHbs({
-    extname: '.hbs',
-    layoutsDir: 'views/layouts/',
-    defaultLayout: 'main-layout'
-}));
-app.set('view engine', 'hbs');
+// app.engine('.hbs', expressHbs({
+//     extname: '.hbs',
+//     layoutsDir: 'views/layouts/',
+//     defaultLayout: 'main-layout'
+// }));
+// app.set('view engine', 'hbs');
 
 //EJS View Engine
+app.set('view engine', 'ejs');
 
 app.set('views', 'views');
 
