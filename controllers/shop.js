@@ -20,6 +20,7 @@ exports.getIndex = (req, res, next) => {
     });   
 };
 
+
 exports.getCart = (req, res, next) => {
     res.render('shop/cart', {
         pageTitle: 'Your Cart',
@@ -44,13 +45,14 @@ exports.getCheckout = (req, res, next) => {
 
 
 exports.getProduct = (req, res, next) => {
-    // Product.fetchAll(products => {
-    //     res.render('shop/product-list', {
-    //         prods: products,
-    //         pageTitle: 'Shop',
-    //         path: '/products',
-    //       });
-    // });   
+  const prodId = req.params.productId;
+  Product.findById(prodId, product => {
+    res.render('shop/product-detail', {
+              prod: product,
+              pageTitle: 'Product',
+              path: '/product-detail',
+            });
+  });  
 };
 
 
