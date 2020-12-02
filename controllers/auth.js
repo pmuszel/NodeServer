@@ -1,9 +1,9 @@
 const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
-const user = require('../models/user');
 const { request } = require('http');
 
 exports.getLogin = (req, res, next) => {
@@ -74,31 +74,30 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
 
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash(
-          'error',
-          'User already exists, please sign up with different user!'
-        );
-        return res.redirect('/signup');
-      }
+  const errors = validationResult(req);
 
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            'cart.items': [],
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect('/login');
-        });
+  if(!errors.isEmpty()) {
+    return res.status(422)
+    .render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup',
+      errorMessage: errors.array()[0].msg
+    });
+  }
+
+  return bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        'cart.items': [],
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect('/login');
     })
     .catch((err) => console.log(err));
 };
