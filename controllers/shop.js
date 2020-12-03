@@ -68,7 +68,11 @@ Order.find({'user.userId': req.user._id})
         orders: orders
       });
     })
-    .catch(err => console.log(err));
+    .catch((err) => {
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postOrder = (req, res, next) => {
@@ -119,5 +123,9 @@ exports.getProduct = (req, res, next) => {
         path: '/products'
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err)
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
