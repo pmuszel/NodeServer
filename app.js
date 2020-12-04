@@ -2,6 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
@@ -25,6 +26,25 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, './images');
+  },
+  filename: (req, file, callback) => {
+    const firstPart = new Date().toISOString().replace(/:/g, '-');
+    console.log(firstPart);
+    callback(null, firstPart + '_' + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, callback) => {
+  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    callback(null, true);
+  } else {
+    callback(null, false);
+  }
+}
+
 //PUG View Engine
 //app.set('view engine', 'pug');
 
@@ -46,7 +66,12 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
+
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images'))); // musi być '/images' na początku, gdyż inczej szuka plików w root folder jak path jest do /images/[file_name]
+
 app.use(session({
   secret: 'my secret',
   resave: false,
@@ -103,9 +128,9 @@ app.get('/500', errorController.page500);
 
 app.use(errorController.pageNotFound);
 
-app.use((error, req, res, next) => { // łapie wszystkie catch, gdzie wywołujemy next(error) 
-  res.status(500).render('500', { pageTitle: 'Error', path: '/500', isAuthenticated: req.session.isLoggedIn });
-});
+// app.use((error, req, res, next) => { // łapie wszystkie catch, gdzie wywołujemy next(error) 
+//   res.status(500).render('500', { pageTitle: 'Error', path: '/500', isAuthenticated: req.session ? req.session.isLoggedIn : false });
+// });
 
 //  mongoConnect(() => {
 // //   app.listen(3000);
